@@ -3,6 +3,14 @@ import numpy as np
 from qiskit.quantum_info.operators.pauli import Pauli
 from qiskit.aqua.operators.primitive_ops.pauli_op import PauliOp
 
+def identity(num_qubits):
+    # Returns an identity operator.
+    labels   = ['I']*num_qubits
+    pauli    = Pauli(label=labels)
+    pauli_op = PauliOp(pauli, 1.0)
+
+    return pauli_op
+    
 def heisenberg1D(num_qubits):
     # Returns a qiskit Operator representing
     # the 1D Heisenberg model with open boundary conditions:
