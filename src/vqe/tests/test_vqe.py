@@ -7,8 +7,6 @@ from qiskit import Aer
 from qiskit.aqua.components.optimizers import SLSQP
 from qiskit.aqua.algorithms import VQE
 
-from .context import hamiltonian as ham
-
 
 def test_antiferromagnetic_field_5qubits_with_vqe(seed = '999999'):
 	#Sets up a simple antiferromagnetic background field and checks if VQE can create the proper pattern
