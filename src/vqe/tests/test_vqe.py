@@ -7,15 +7,13 @@ from qiskit import Aer
 from qiskit.aqua.components.optimizers import SLSQP
 from qiskit.aqua.algorithms import VQE
 
-from .context import hamiltonian as ham
-
 
 def test_antiferromagnetic_field_5qubits_with_vqe():
 	#Sets up a simple antiferromagnetic background field and checks if VQE can create the proper pattern
 	num_qubits = 5
 	H = ham.magnetic_fields([-1, 1, -1, 1, -1]) #With this field the ground state should be ^v^v^
 	ansatz = vf.sz_conserved_ansatz(num_qubits, spindn_cluster = 'random')
-	ansatz.draw('mpl')
+	#ansatz.draw('mpl')
 
 	optimizer = SLSQP(maxiter = 5)
 	vqe_h5 = VQE(H, ansatz, optimizer)
