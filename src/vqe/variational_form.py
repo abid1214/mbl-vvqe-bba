@@ -18,25 +18,25 @@ def sz_conserved_ansatz(num_qubits,
 	ansatz = ExcitationPreserving(num_qubits, insert_barriers = insert_barriers, entanglement = entanglement, reps = reps)
 	ansatz_circuit = QuantumCircuit(num_qubits)
 
-	if total_spindn = -1:
+	if total_spindn == -1:
 		total_spindn = math.floor(num_qubits/2.)
 	if total_spindn > num_qubits:
 		print("WARNING: total Sz {0} exceeds qubit number {1}".format(total_spindn, num_qubits))
 		total_spindn = num_qubits
 
 	
-	if spindn_cluster = 'left_clustered':
+	if spindn_cluster == 'left_clustered':
 		#Flips all the spins on one side of the circuit
 		for i in range(total_spindn):
 			ansatz_circuit.x(i)
 	
-	if spindn_cluster = 'balanced':
+	if spindn_cluster == 'balanced':
 		#Attempts to distribute the spin flips as evenly as possible
 		spindn_interval = num_qubits/total_spindn
 		for i in range(total_spindn):
 			ansatz_circuit.x(math.floor(i*spindn_interval))
 
-	if spindn_cluster = 'random':
+	if spindn_cluster == 'random':
 		#Flips the spin at random positions (no double flips)
 		random.seed(seed)
 		spindn_choices = random.sample(range(num_qubits), total_spindn)
