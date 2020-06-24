@@ -1,7 +1,7 @@
 from qiskit.circuit.library import ExcitationPreserving
 from qiskit import QuantumCircuit
 import math
-from random import sample
+import random
 
 
 def sz_conserved_ansatz(num_qubits, 
@@ -9,7 +9,8 @@ def sz_conserved_ansatz(num_qubits,
 	entanglement = 'sca',
 	reps = 1,
 	total_spindn = -1, 
-	spindn_cluster = 'balanced'):
+	spindn_cluster = 'balanced',
+	seed = '999999'):
 	#Returns a QuantumCircuit consisting of spin flips equal to total_spindn, followed by Sz preserving
 	#parameter-dependent rotations.
 	#If total_spindn = -1, it flips half or floor(half) the spins
@@ -37,10 +38,11 @@ def sz_conserved_ansatz(num_qubits,
 
 	if spindn_cluster = 'random':
 		#Flips the spin at random positions (no double flips)
+		random.seed(seed)
 		spindn_choices = random.sample(range(num_qubits), total_spindn)
 		for c in spindn_choices:
 			ansatz_circuit.x(c)
-	
+
 	ansatz_circuit.compose(ansatz, inplace = True)
 	return ansatz_circuit
 
