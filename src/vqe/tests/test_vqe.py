@@ -15,7 +15,7 @@ def test_antiferromagnetic_field_5qubits_with_vqe(seed = '999999'):
 	num_qubits = 5
 	H = ham.magnetic_fields([-1, 1, -1, 1, -1]) #With this field the ground state should be ^v^v^
 	ansatz = vf.sz_conserved_ansatz(num_qubits, entanglement='full', spindn_cluster = 'random', seed = seed)
-	ansatz.draw('mpl')
+	#ansatz.draw('mpl')
 
 	optimizer = SLSQP(maxiter = 5)
 	vqe_h5 = VQE(H, ansatz, optimizer)
