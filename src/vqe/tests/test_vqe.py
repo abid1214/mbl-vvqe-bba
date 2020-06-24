@@ -3,16 +3,17 @@ from .context import variational_form as vf, hamiltonian as ham
 import numpy as np
 import numpy.linalg as nla
 
+from qiskit import Aer
 from qiskit.aqua.components.optimizers import SLSQP
 from qiskit.aqua.algorithms import VQE
 
-from qiskit import Aer
+from .context import hamiltonian as ham
 
 
 def test_antiferromagnetic_field_5qubits_with_vqe():
 	#Sets up a simple antiferromagnetic background field and checks if VQE can create the proper pattern
 	num_qubits = 5
-	H = ham.magnetic_field([-1, 1, -1, 1, -1]) #With this field the ground state should be ^v^v^
+	H = ham.magnetic_fields([-1, 1, -1, 1, -1]) #With this field the ground state should be ^v^v^
 	ansatz = vf.sz_conserved_ansatz(num_qubits, spindn_cluster = 'random')
 	ansatz.draw('mpl')
 
