@@ -1,0 +1,53 @@
+from qiskit import QuantumRegister, ClassicalRegister, QuantumCircuit
+from utilities import simulate_qc
+
+def _swap_test_init(psi, phi):
+    '''helper function for swap_test_QC
+       initializes a quantum circuit for swap test
+    '''
+    num_qubits = psi.num_qubits
+    qc = QuantumCircuit(QuantumRegister(1, 'a'),
+                        QuantumRegister(num_qubits, 'psi'),
+                        QuantumRegister(num_qubits, 'phi'),
+                        ClassicalRegister(1, 'm'))
+    qc.compose(psi, list(range(1, num_qubits+1)), inplace=True)
+    qc.compose(phi, list(range(num_qubits+1,2*num_qubits+1)), inplace=True)
+    return qc
+
+
+def swap_test_QC(psi, phi):
+    ''' swap test algorithm from
+        https://en.wikipedia.org/wiki/Swap_test
+        Inputs: psi and phi are QuantumCircuit objects
+                with the same number of qubits
+        Return:
+            QuantumCircuit object for swap test
+    '''
+    #initialize registers and circuit
+    qc = _swap_test_init(psi, phi)
+
+    num_qubits = int((qc.num_qubits - 1)/2)
+
+    #construct gates
+    qc.h(0)
+    for i in range(num_qubits):
+        qc.cswap(0, i+1, 2*num_qubits+i)
+    qc.h(0)
+    qc.measure(0, 0)
+
+    return qc
+
+
+def swap_overlap(psi, phi, shots=1000):
+    '''given two quantum circuits that represent
+       psi and phi, returns the overlap between them using
+       the swap test
+    '''
+
+    qc = swap_test_QC(psi, phi)
+    counts = simulate_qc(qc, shots)
+    if '1' not in counts.keys():
+        return 1
+    zeros, ones = counts['0'], counts['1']
+    P = zeros + ones
+    return 1 - 2*ones/P
