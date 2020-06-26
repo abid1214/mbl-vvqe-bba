@@ -52,5 +52,8 @@ def test_vvqe():
   variance = (vec.conj()@H_squared_mat@vec-energy**2).real
   fidelity=np.max(np.abs(evecs.T@vec))
   print("E={} Var={} Fidelity={}".format(energy,variance,fidelity))
+  #test variance matches
+  assert abs(variance-opt_result1['optimal_value']) < 1e-8
+  # test sensibility
   assert 0.5 > variance > 0
   assert fidelity<1 and fidelity > 0.9
