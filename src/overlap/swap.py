@@ -15,36 +15,44 @@ def _swap_test_init(psi, phi):
     return qc
 
 
-def swap_test_QC(psi, phi):
+def swap_test_QC(psi, phi, idx_list=None):
     ''' swap test algorithm from
         https://en.wikipedia.org/wiki/Swap_test
         Inputs: psi and phi are QuantumCircuit objects
                 with the same number of qubits
+
+                if we want a partial overlap of psi and phi,
+                idx_list and are the indices
+                of the qubits to perform the overlap with
         Return:
             QuantumCircuit object for swap test
     '''
     #initialize registers and circuit
     qc = _swap_test_init(psi, phi)
 
-    num_qubits = int((qc.num_qubits - 1)/2)
-
-    #construct gates
     qc.h(0)
-    for i in range(num_qubits):
-        qc.cswap(0, i+1, 2*num_qubits+i)
+
+    num_qubits = int((qc.num_qubits - 1)/2)
+    if idx_list == None:
+        for i in range(num_qubits):
+            qc.cswap(0, i+1, num_qubits+i+1)
+    else:
+        for i in idx_list:
+            qc.cswap(0, i+1, num_qubits+i+1)
+
     qc.h(0)
     qc.measure(0, 0)
 
     return qc
 
 
-def swap_overlap(psi, phi, shots=1000):
+def swap_overlap(psi, phi, idx_list=None, shots=1000):
     '''given two quantum circuits that represent
        psi and phi, returns the overlap between them using
        the swap test
     '''
 
-    qc = swap_test_QC(psi, phi)
+    qc = swap_test_QC(psi, phi, idx_list)
     counts = simulate_qc(qc, shots)
     if '1' not in counts.keys():
         return 1
