@@ -59,7 +59,7 @@ def combined_optimizer(hamiltonian, ansatz, optimizer, backend_name = 'statevect
 		fidelity=np.max(np.abs(evecs.T@vec))
 		logger.info("Energy:{},Var:{},Fid:{},Time:{}".format(energy_linear, variance_linear, fidelity, elapsed_time))
 		return energy_linear, variance_linear, fidelity, elapsed_time, variance_results
-	else if evaluation_type == 'circuit'
+	elif evaluation_type == 'circuit'
 		#Computes energy and variance using circuit operators. Can't compute fidelity
 		final_wavefunction = attach_parameters(ansatz, variance_results['optimal_point'])
 		energy = expectation(final_wavefunction, hamiltonian, backend)[0]
