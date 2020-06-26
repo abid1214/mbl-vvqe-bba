@@ -56,7 +56,60 @@ def magnetic_fields(potentials):
 
     return op
 
+def sum_duplicates(operator):
+    # Sums together the coefficients
+    # of duplicated PauliOps.
+    # Note: Assumes a SummedOp of PauliOp.
+
+    if len(operator) == 0:
+        return operator
+    
+    op_terms = dict()
+    for pauliop in operator:
+        pauli = pauliop.primitive
+        if pauli in op_terms:
+            op_terms[pauli] += pauliop.coeff
+        else:
+            op_terms[pauli] = pauliop.coeff
+
+    first_term = True
+    for key in op_terms:
+        pauliop = PauliOp(key, op_terms[key])
+        if first_term:
+            op         = pauliop
+            first_term = False
+        else:
+            op += pauliop
+
+    return op
+
+def remove_zeros(operator, tol=1e-15):
+    # Removes PauliOps with coefficients
+    # of zero.
+    # Notes: Assumes a SummedOp of PauliOp. 
+    # Cannot handle a zero operator.
+    
+    first_term = True
+    for pauliop in operator:
+        if np.abs(pauliop.coeff) > tol:
+            if first_term:
+                op         = pauliop
+                first_term = False
+            else:
+                op  += pauliop
+
+    if first_term:
+        raise ValueError('Operator is the zero operator!')
+    
+    return op
+
 def square(operator):
     # Returns a qiskit ComposedOp Operator
     # representing the operator squared.
-    return operator.compose(operator)
+    op2 = operator.compose(operator)
+    op2 = op2.reduce().reduce()
+
+    op2 = sum_duplicates(op2)
+    op2 = remove_zeros(op2)
+
+    return op2
