@@ -26,13 +26,14 @@ def expectation(wavefn, operator, backend):
 
 def attach_parameters(ansatz, params):
 	#Assigns a list of parameters to an ansatz
-	assert len(params) == ansats.num_parameters
+	assert len(params) == ansatz.num_parameters
 	param_dict = dict(zip(ansatz.parameters, params))
 	return ansatz.assign_parameters(param_dict)
 
-def combined_optimizer(hamiltonian, ansatz, optimizer, backend_name = 'statevector_simulator', evaluation_type = 'none'):
+def combined_optimizer(hamiltonian, ansatz, optimizer, hamiltonian_squared = None, backend_name = 'statevector_simulator', evaluation_type = 'none'):
 	#First optimizes H^2 using VQE, then optimizes the variance using VVQE
-	hamiltonian_squared = ham.square(hamiltonian)
+	if hamiltonian_squared == None:
+		hamiltonian_squared = ham.square(hamiltonian)
 
 	backend = Aer.get_backend(backend_name)
 	t0 = time.process_time()
