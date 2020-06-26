@@ -8,6 +8,9 @@ from qiskit.aqua.operators import CircuitSampler
 from qiskit.aqua.algorithms import VQE
 import time
 import numpy.random
+import logging
+
+logger = logging.getLogger(__name__)
 
 def random_initial_point(num_points):
 	#TODO: Change this to a better random function?
@@ -40,26 +43,29 @@ def combined_optimizer(hamiltonian, ansatz, optimizer, backend_name = 'statevect
 	variance_algorithm = VVQE(hamiltonian, ansatz, optimizer, include_custom=True, initial_point = h2_optimal_params)
 	variance_results = variance_algorithm.run(backend)
 	t1 = time.process_time()
+	elapsed_time = t1-t0
+	fn_evals = variance_results['cost_function_evals'] + h2_results['cost_function_evals']
+	logger.info("Found variance {} after {} function calls".format(np.real(variance_results['eigenvalue']), fn_evals))
 
 	if evaluation_type == 'statevector':
 		#Turns the optimal wavefunction into a statevector to compute energy, variance, fidelity, etc.
 		assert backend_name == 'statevector_simulator'
 		vec = variance_results['eigenstate']
-
-		H_mat = hamiltonian.to_matrix()
-		# H^2
-		H_squared_mat = hamiltonian_squared.to_matrix()
-		(evals, evecs)   = np.linalg.eigh(H_mat)
-		energy_linear   = (vec.conj()@H_mat@vec).real
-		variance_linear = (vec.conj()@H_squared_mat@vec-energy_linear**2).real
+		h_mat = hamiltonian.to_matrix()
+		h_squared_mat = hamiltonian_squared.to_matrix()
+		(evals, evecs)   = np.linalg.eigh(h_mat)
+		energy_linear   = (vec.conj()@h_mat@vec).real
+		variance_linear = (vec.conj()@h_squared_mat@vec-energy_linear**2).real
 		fidelity=np.max(np.abs(evecs.T@vec))
-		return energy_linear, variance_linear, fidelity, t1-t0, variance_results
+		logger.info("Energy:{},Var:{},Fid:{},Time:{}".format(energy_linear, variance_linear, fidelity, elapsed_time))
+		return energy_linear, variance_linear, fidelity, elapsed_time, variance_results
 	else if evaluation_type == 'circuit'
 		#Computes energy and variance using circuit operators. Can't compute fidelity
 		final_wavefunction = attach_parameters(ansatz, variance_results['optimal_point'])
 		energy = expectation(final_wavefunction, hamiltonian, backend)[0]
 		variance = expectation(final_wavefunction, hamiltonian_squared, backend)[0] - energy**2
-		return energy, variance, -1, t1-t0, variance_results
+		logger.info("Energy:{},Var:{},Time:{}".format(energy_linear, variance_linear, elapsed_time))
+		return energy, variance, -1, elapsed_time, variance_results
 	#If no evaluation type, just returns the VQE Results object
 	return variance_results
 	
