@@ -1,7 +1,7 @@
 from vvqe import *
 import hamiltonian as ham
 import variational_form as vf
-from qiskit import Aer
+from qiskit import Aer, execute
 from qiskit.aqua.operators.expectations import ExpectationFactory
 from qiskit.aqua.operators.state_fns import StateFn, CircuitStateFn
 from qiskit.aqua.operators import CircuitSampler
@@ -38,23 +38,28 @@ def get_vector_from_circuit(ansatz, params, backend, label='snap'):
 	assert len(vec) == 2**ansatz.num_qubits
 	return np.array(vec)
 
-def combined_optimizer(hamiltonian, ansatz, optimizer, backend_method = 'statevector', num_shots=1, hamiltonian_squared = None, backend_name = 'statevector_simulator', evaluation_type = 'none'):
+def combined_optimizer(hamiltonian, ansatz, optimizer, 
+		backend_method = 'statevector', 
+		num_shots=1, 
+		hamiltonian_squared = None, 
+		include_custom = True,
+		backend_name = 'statevector_simulator', 
+		evaluation_type = 'none'):
 	#First optimizes H^2 using VQE, then optimizes the variance using VVQE
 	if hamiltonian_squared == None:
 		hamiltonian_squared = ham.square(hamiltonian)
 
 	backend = Aer.get_backend(backend_name)
 	t0 = time.process_time()
-
 	
 	quantum_instance = QuantumInstance(Aer.get_backend(backend_name), shots=num_shots, backend_options={'method': backend_method})
 
-	h2_algorithm = VQE(hamiltonian_squared, ansatz, optimizer, include_custom=True, initial_point = random_initial_point(ansatz.num_parameters), quantum_instance = quantum_instance)
-	h2_results = h2_algorithm.run(backend)
+	h2_algorithm = VQE(hamiltonian_squared, ansatz, optimizer, include_custom=include_custom, initial_point = random_initial_point(ansatz.num_parameters), quantum_instance = quantum_instance)
+	h2_results = h2_algorithm.run()
 	h2_optimal_params = h2_results['optimal_point']
 
-	variance_algorithm = VVQE(hamiltonian, ansatz, optimizer, include_custom=True, initial_point = h2_optimal_params, quantum_instance = quantum_instance)
-	variance_results = variance_algorithm.run(backend)
+	variance_algorithm = VVQE(hamiltonian, ansatz, optimizer, include_custom=include_custom, initial_point = h2_optimal_params, quantum_instance = quantum_instance)
+	variance_results = variance_algorithm.run()
 	t1 = time.process_time()
 	elapsed_time = t1-t0
 	fn_evals = variance_results['cost_function_evals'] + h2_results['cost_function_evals']
