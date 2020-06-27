@@ -30,28 +30,44 @@ def attach_parameters(ansatz, params):
 	param_dict = dict(zip(ansatz.parameters, params))
 	return ansatz.assign_parameters(param_dict)
 
-def combined_optimizer(hamiltonian, ansatz, optimizer, hamiltonian_squared = None, backend_name = 'statevector_simulator', evaluation_type = 'none'):
+def get_vector_from_circuit(ansatz, params, backend, label='snap'):
+	wavefunction = attach_parameters(ansatz, params)
+	snap = wavefunction.snapshot(label, snapshot_type='statevector')
+	snap_results = execute(wavefunction, backend = backend).result()
+	vec = snap_results.results[0].data.snapshots.statevector[label][0]
+	assert len(vec) == 2**ansatz.num_qubits
+	return np.array(vec)
+
+def combined_optimizer(hamiltonian, ansatz, optimizer, backend_method = 'statevector', num_shots=1, hamiltonian_squared = None, backend_name = 'statevector_simulator', evaluation_type = 'none'):
 	#First optimizes H^2 using VQE, then optimizes the variance using VVQE
 	if hamiltonian_squared == None:
 		hamiltonian_squared = ham.square(hamiltonian)
 
 	backend = Aer.get_backend(backend_name)
 	t0 = time.process_time()
-	h2_algorithm = VQE(hamiltonian_squared, ansatz, optimizer, include_custom=True, initial_point = random_initial_point(ansatz.num_parameters))
+
+	
+	quantum_instance = QuantumInstance(Aer.get_backend(backend_name), shots=num_shots, backend_options={'method': backend_method})
+
+	h2_algorithm = VQE(hamiltonian_squared, ansatz, optimizer, include_custom=True, initial_point = random_initial_point(ansatz.num_parameters), quantum_instance = quantum_instance)
 	h2_results = h2_algorithm.run(backend)
 	h2_optimal_params = h2_results['optimal_point']
 
-	variance_algorithm = VVQE(hamiltonian, ansatz, optimizer, include_custom=True, initial_point = h2_optimal_params)
+	variance_algorithm = VVQE(hamiltonian, ansatz, optimizer, include_custom=True, initial_point = h2_optimal_params, quantum_instance = quantum_instance)
 	variance_results = variance_algorithm.run(backend)
 	t1 = time.process_time()
 	elapsed_time = t1-t0
 	fn_evals = variance_results['cost_function_evals'] + h2_results['cost_function_evals']
-	logger.info("Found variance {} after {} function calls".format(np.real(variance_results['eigenvalue']), fn_evals))
+	#variance_results['h2_evals'] = h2_results['cost_function_evals']
+	logger.info("Found variance {} after {} H^2 function calls and {} Variance function calls".format(np.real(variance_results['eigenvalue']), h2_results['cost_function_evals'], variance_results['cost_function_evals']))
 
 	if evaluation_type == 'statevector':
 		#Turns the optimal wavefunction into a statevector to compute energy, variance, fidelity, etc.
-		assert backend_name == 'statevector_simulator'
-		vec = variance_results['eigenstate']
+		vec = np.zeros(2**ansatz.num_qubits)
+		if backend_name == 'statevector_simulator':
+			vec = variance_results['eigenstate']
+		else:
+			vec = get_vector_from_circuit(ansatz, variance_results['optimal_point'], backend)
 		h_mat = hamiltonian.to_matrix()
 		h_squared_mat = hamiltonian_squared.to_matrix()
 		(evals, evecs)   = np.linalg.eigh(h_mat)
