@@ -15,7 +15,7 @@ def test_antiferromagnetic_field_5qubits_with_vqe(seed = '999999'):
 	ansatz = vf.sz_conserved_ansatz(num_qubits, entanglement='full', spindn_cluster = 'random', seed = seed)
 	#ansatz.draw('mpl')
 
-	optimizer = SLSQP(maxiter = 5)
+	optimizer = SLSQP(maxiter = 30)
 	vqe_h5 = VQE(H, ansatz, optimizer)
 
 	backend = Aer.get_backend("statevector_simulator")
