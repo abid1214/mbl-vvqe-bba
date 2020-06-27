@@ -16,15 +16,14 @@ def simulate_qc(qc, shots=1000):
     counts = result.get_counts(qc)
     return counts
 
+
 def get_p_from_counts(counts, num_qubits):
     '''returns a vector probability distribution from
        the counts dictionary object
     '''
     p = np.zeros(2**num_qubits)
     for b in counts.keys():
-        s = str(b)[::-1]
-        print(s, int(s,2), counts[b])
-        p[int(s,2)] = counts[b]
+        p[int(b,2)] = counts[b]
     return p/np.sum(p)
 
 
@@ -35,6 +34,7 @@ def classical_overlap(psi_vec, phi_vec):
     '''
     psi_phi = np.dot(psi_vec, np.conj(phi_vec))
     return (psi_phi*np.conj(psi_phi)).real
+
 
 def psi_qc(alpha):
     '''constructs the QuantumCircuit representing
@@ -47,6 +47,7 @@ def psi_qc(alpha):
         psi.rz(alpha,0)
     return psi
 
+
 def measure_qc(psi):
     ''' constructs a QuantumCircuit from a
         wavefunction QuantumCircuit psi that
@@ -57,10 +58,8 @@ def measure_qc(psi):
                         ClassicalRegister(num_qubits, 'm'))
     qc.compose(psi, list(range(num_qubits)), inplace=True)
     l = list(range(num_qubits))
-    qc.measure(l,l)
+    qc.measure(l,l[::-1])
     return qc
-
-
 
 
 def psi_classical(alpha):
@@ -80,7 +79,7 @@ def psi2_qc(r):
         when r = 1, this is a pure state
     '''
     psi = QuantumCircuit(2)
-    theta_over_2 = acos(np.sqrt((1-r)/2))
+    theta_over_2 = acos(np.sqrt((1+r)/2))
     psi.ry(2*theta_over_2, 0)
     psi.h(1)
     psi.cz(0,1)
