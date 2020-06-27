@@ -22,6 +22,7 @@ import warnings
 from time import time
 import numpy as np
 import copy
+from hamiltonian import square
 
 from qiskit import ClassicalRegister, QuantumCircuit
 from qiskit.circuit import Parameter
@@ -139,7 +140,7 @@ class VVQE(VQAlgorithm, MinimumEigensolver):
         """
         
         if operator is not None:
-            operator2 = copy.deepcopy(operator.compose(operator))
+            operator2 = square(operator)
         else:
             operator2 = None
         
