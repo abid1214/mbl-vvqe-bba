@@ -29,3 +29,24 @@ def test_heisenberg1D_5qubits():
     (evals, evecs) = nla.eigh(H_mat)
     
     assert(np.allclose(evals, expected_evals, rtol=1e-8))
+
+def test_H_squared():
+
+    np.random.seed(42)
+
+    num_qubits = 5
+    W          = 5.0
+
+    potentials = W * (2.0*np.random.rand(num_qubits) - 1.0)
+    
+    H = ham.heisenberg1D(num_qubits) + ham.magnetic_fields(potentials)
+
+    H_mat  = H.to_matrix()
+    H2_mat = H_mat @ H_mat
+
+    H_squared     = ham.square(H)
+    H_squared_mat = H_squared.to_matrix()
+
+    print('H = \n{}\nH^2 = {}'.format(H, H_squared))
+    
+    assert(np.allclose(H2_mat, H_squared_mat))

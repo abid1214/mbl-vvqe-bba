@@ -1,0 +1,17 @@
+Filenames: W[#]_q[#]_[method]_[entanglement]_rep[#].pkl
+
+Data is pickled lists stored in dictionaries of
+
+- W
+- opt_params
+- statevector
+- E
+- Var
+- fidelity
+
+
+To read do
+
+import pickle
+with open(fname,'rb') as f:
+  data = pickle.load(f)
