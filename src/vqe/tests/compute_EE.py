@@ -47,7 +47,7 @@ def entropy(L,LA,psi):
   return EE, vEE
 
 
-L = 8
+L = 4
 with open('ed_entropy_data_'+str(L)+'_qubits.pkl', 'rb') as f1:
   data1 = pickle.load(f1)
 
@@ -66,6 +66,7 @@ with open('ed_entropy_data_'+str(L)+'_qubits.pkl', 'rb') as f1:
 ### compute entropy of all disorder
 batch = 1000
 EE_avg = np.zeros((len(data1)//batch, L//2))
+vEE_avg = np.zeros((len(data1)//batch, L//2))
 for W in range(len(data1)//batch):
   for LA in range(1,L//2+1):
     for i in range(batch*W,batch*(W+1)):
@@ -73,6 +74,7 @@ for W in range(len(data1)//batch):
       rho = ptrace(L,LA,psi)
       rho_EE, rho_vEE = entropy(L,LA,psi)
       EE_avg[W,LA-1] += rho_EE
+      vEE_avg[W,LA-1] += rho_vEE
 
 EE_avg = EE_avg / batch
 plt.plot(EE_avg.transpose())
@@ -80,3 +82,11 @@ plt.title('L'+str(L))
 plt.xlabel('LA')
 plt.ylabel('EE')
 plt.savefig('L'+str(L)+'.png')
+plt.close()
+
+vEE_avg = vEE_avg / batch
+plt.plot(vEE_avg.transpose())
+plt.title('L'+str(L))
+plt.xlabel('LA')
+plt.ylabel('vEE')
+plt.savefig('L'+str(L)+'_vEE.png')
