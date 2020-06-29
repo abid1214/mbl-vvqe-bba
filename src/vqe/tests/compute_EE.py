@@ -47,7 +47,7 @@ def entropy(L,LA,psi):
   return EE, vEE
 
 
-L = 4
+L = 8
 with open('ed_entropy_data_'+str(L)+'_qubits.pkl', 'rb') as f1:
   data1 = pickle.load(f1)
 
@@ -64,29 +64,62 @@ with open('ed_entropy_data_'+str(L)+'_qubits.pkl', 'rb') as f1:
 #  print(diff)
 
 ### compute entropy of all disorder
-batch = 1000
-EE_avg = np.zeros((len(data1)//batch, L//2))
-vEE_avg = np.zeros((len(data1)//batch, L//2))
+#batch = 1000
+#EE_avg = np.zeros((len(data1)//batch, L//2))
+#vEE_avg = np.zeros((len(data1)//batch, L//2))
+#for W in range(len(data1)//batch):
+#  for LA in range(1,L//2+1):
+#    for i in range(batch*W,batch*(W+1)):
+#      psi = data1[i]['zero_energy_vec']
+#      rho_EE, rho_vEE = entropy(L,LA,psi)
+#      EE_avg[W,LA-1] += rho_EE
+#      vEE_avg[W,LA-1] += rho_vEE
+#
+#EE_avg1 = EE_avg / batch
+#plt.plot(EE_avg1.transpose())
+#plt.title('L'+str(L))
+#plt.xlabel('LA')
+#plt.ylabel('EE')
+#plt.savefig('L'+str(L)+'.png')
+#plt.close()
+#
+#EE_avg2 = EE_avg / batch / np.arange(1,L//2+1)
+#plt.plot(EE_avg2.transpose())
+#plt.title('L'+str(L))
+#plt.xlabel('LA')
+#plt.ylabel('EE/LA')
+#plt.savefig('EE_L'+str(L)+'.png')
+#plt.close()
+#
+#vEE_avg1 = vEE_avg / batch
+#plt.plot(vEE_avg1.transpose())
+#plt.title('L'+str(L))
+#plt.xlabel('LA')
+#plt.ylabel('vEE')
+#plt.savefig('L'+str(L)+'_vEE.png')
+#plt.close()
+#
+#vEE_avg2 = vEE_avg / batch / np.arange(1,L//2+1)
+#plt.plot(vEE_avg2.transpose())
+#plt.title('L'+str(L))
+#plt.xlabel('LA')
+#plt.ylabel('vEE/LA')
+#plt.savefig('vEE_L'+str(L)+'.png')
+#plt.close()
+
+### compute dS
+batch = 1000  
+dEE_avg = np.zeros((len(data1)//batch, batch))
+dvEE_avg = np.zeros((len(data1)//batch, batch))
 for W in range(len(data1)//batch):
-  for LA in range(1,L//2+1):
-    for i in range(batch*W,batch*(W+1)):
-      psi = data1[i]['zero_energy_vec']
-      rho = ptrace(L,LA,psi)
-      rho_EE, rho_vEE = entropy(L,LA,psi)
-      EE_avg[W,LA-1] += rho_EE
-      vEE_avg[W,LA-1] += rho_vEE
+  for i in range(batch*W,batch*(W+1)):
+    psi = data1[i]['zero_energy_vec']
+    rho_EE, rho_vEE = entropy(L,1,psi)
+    rho_EE2, rho_vEE2 = entropy(L,2,psi)
+    dEE_avg[W,i%batch] = rho_EE2 - rho_EE
+    dvEE_avg[W,i%batch] = rho_vEE2 - rho_vEE
 
-EE_avg = EE_avg / batch
-plt.plot(EE_avg.transpose())
-plt.title('L'+str(L))
-plt.xlabel('LA')
-plt.ylabel('EE')
-plt.savefig('L'+str(L)+'.png')
-plt.close()
-
-vEE_avg = vEE_avg / batch
-plt.plot(vEE_avg.transpose())
-plt.title('L'+str(L))
-plt.xlabel('LA')
-plt.ylabel('vEE')
-plt.savefig('L'+str(L)+'_vEE.png')
+plt.hist(dEE_avg[0,:],color='r')
+plt.hist(dEE_avg[1,:],color='g')
+plt.hist(dEE_avg[2,:],color='b')
+plt.show()
