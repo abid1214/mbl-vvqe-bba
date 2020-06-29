@@ -1,0 +1,10 @@
+filenames: ed_entropy_data_[#]_qubits.pkl
+
+
+pickled list of dictionaries:
+- W
+- zero_energy_vec
+- reduced_dm
+- energy
+- renyi_entropy
+- vn_entropy
