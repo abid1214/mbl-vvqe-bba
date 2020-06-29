@@ -1,8 +1,9 @@
-from qiskit import Aer, execute, QuantumCircuit, QuantumRegister, ClassicalRegister
+from qiskit import Aer, execute, QuantumCircuit, QuantumRegister, ClassicalRegister, IBMQ
+from qiskit.providers.aer.noise import NoiseModel
 import numpy as np
 from math import acos
 
-def simulate_qc(qc, shots=1000):
+def simulate_qc(qc, shots=1000, bname='qasm_simulator'):
     '''simulates the quantum circuits, and
        returns a dictionary with the keys being
        the binary representation of the measurement
@@ -10,11 +11,35 @@ def simulate_qc(qc, shots=1000):
        measurement recieved. The total number of counts
        equals shots
     '''
-    simulator = Aer.get_backend('qasm_simulator')
+    simulator = Aer.get_backend(bname)
     job = execute(qc, simulator, shots=shots)
     result = job.result()
     counts = result.get_counts(qc)
     return counts
+
+
+def simulate_qc_with_noise(qc, shots=1000, bname='qasm_simulator'):
+    '''simulates the quantum circuits, and
+       returns a dictionary with the keys being
+       the binary representation of the measurement
+       and the values being the number of counts that
+       measurement recieved. The total number of counts
+       equals shots
+    '''
+    provider = IBMQ.load_account()
+    backend = provider.get_backend('ibmq_vigo')
+    noise_model = NoiseModel.from_backend(backend)
+    coupling_map = backend.configuration().coupling_map
+    basis_gates = noise_model.basis_gates
+
+    result = execute(qc, Aer.get_backend(bname),
+                 shots=shots,
+                 coupling_map=coupling_map,
+                 basis_gates=basis_gates,
+                 noise_model=noise_model).result()
+    counts = result.get_counts(0)
+    return counts
+
 
 
 def get_p_from_counts(counts, num_qubits):
@@ -23,7 +48,8 @@ def get_p_from_counts(counts, num_qubits):
     '''
     p = np.zeros(2**num_qubits)
     for b in counts.keys():
-        p[int(b,2)] = counts[b]
+        s = int(str(b)[::-1],2)
+        p[s] = counts[b]
     return p/np.sum(p)
 
 
@@ -58,7 +84,7 @@ def measure_qc(psi):
                         ClassicalRegister(num_qubits, 'm'))
     qc.compose(psi, list(range(num_qubits)), inplace=True)
     l = list(range(num_qubits))
-    qc.measure(l,l[::-1])
+    qc.measure(l,l)
     return qc
 
 
