@@ -28,7 +28,7 @@ Use `pytest` to run tests
 
 # Team: Quarantine Qubits
 
-* [Abid Kahn](https://github.com/abid1214)
+* [Abid Khan](https://github.com/abid1214)
 * [Ryan Levy](https://github.com/ryanlevy)
 * [James Allen](https://github.com/jamesza2)
 * [Eli Chertkov](https://github.com/echertkov)
