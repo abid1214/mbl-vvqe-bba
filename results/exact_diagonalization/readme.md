@@ -1,4 +1,4 @@
-filenames: ed_entropy_data_[#]_qubits.pkl
+filenames: `ed_entropy_data_[#]_qubits.pkl`
 
 
 pickled list of dictionaries:
@@ -11,11 +11,13 @@ pickled list of dictionaries:
 
 ==========================================
 For the spectrum data
-filenames: ed_spectrum_data_[#]_qubits.pkl.gz
+filenames: `ed_spectrum_data_[#]_qubits.pkl.gz`
 
 to load:
+```python
   import pickle,gzip
   data = pickle.load(gzip.open("ed_spectrum_data_4_qubits.pkl.gz","rb"))
+```
 
 it contains a pickled list of lists of dicts (each list denotes a different W)
 - W
@@ -26,7 +28,8 @@ it contains a pickled list of lists of dicts (each list denotes a different W)
 large spectrum data not uploaded due to file size
 
 ======
-ed_entropyData_df.pkl.gz is a pickled pandas DataFrame with
+`ed_entropyData_df.pkl.gz` is a pickled pandas DataFrame with
+
 -E_order: energy eigenstate ordering
 -Energy: energy of the eigenstate
 -LA: L_A subsystem size cut
