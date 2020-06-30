@@ -41,16 +41,15 @@ def bba_QC(psi, phi, idx_list=None):
     return qc
 
 
-def bba_overlap(psi, phi, idx_list=None, shots=1000, backend='qasm_simulator', noise=False):
+def bba_overlap(psi, phi, idx_list=None, shots=1000, backend='qasm_simulator', noise=None):
     '''given two quantum circuits that represent
        psi and phi, returns the overlap between them using
        the swap test
     '''
 
-    f = simulate_qc_with_noise if noise else simulate_qc
     num_qubits = psi.num_qubits if idx_list == None else len(idx_list)
     qc = bba_QC(psi, phi, idx_list)
-    counts = f(qc, shots=shots, bname=backend)
+    counts = simulate_qc(qc, shots=shots, bname=backend, noise=noise)
     p_vec = get_p_from_counts(counts, 2*num_qubits)
     c_1 = np.array([1,1,1,-1])
     c_N = np.array([1,1,1,-1])

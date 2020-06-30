@@ -46,15 +46,14 @@ def swap_test_QC(psi, phi, idx_list=None):
     return qc
 
 
-def swap_overlap(psi, phi, idx_list=None, shots=1000, backend='qasm_simulator', noise=False):
+def swap_overlap(psi, phi, idx_list=None, shots=1000, backend='qasm_simulator', noise=None):
     '''given two quantum circuits that represent
        psi and phi, returns the overlap between them using
        the swap test
     '''
 
-    f = simulate_qc_with_noise if noise else simulate_qc
     qc = swap_test_QC(psi, phi, idx_list)
-    counts = f(qc, shots=shots, bname=backend)
+    counts = simulate_qc(qc, shots=shots, bname=backend)
     if '1' not in counts.keys():
         return 1
     zeros, ones = counts['0'], counts['1']
