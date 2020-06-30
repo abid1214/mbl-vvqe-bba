@@ -1,3 +1,6 @@
+![logo](https://github.com/abid1214/qiskit-vqeblob/master/coffee.png)  
+
+
 # Exploring MBL via VVQE & BBA
 
 A [Qiskit Summer Jam 2020](https://github.com/qiskit-community/qiskit-summer-jam-20) hackathon project
