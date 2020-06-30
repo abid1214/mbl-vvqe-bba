@@ -1,4 +1,4 @@
-![logo](https://github.com/abid1214/qiskit-vqe/blob/master/coffee.png)  
+<img src="https://github.com/abid1214/qiskit-vqe/raw/vqe_with_variational_form/coffee.png" width="250px" alt="logo" />  
 
 
 # Exploring MBL via VVQE & BBA
