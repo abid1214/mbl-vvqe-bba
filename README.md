@@ -1,16 +1,36 @@
-# Qiskit-VQE
+# Exploring MBL via VVQE & BBA
 
-This repository holds code for vqe and swap modules for Qiskit that will 
+A [Qiskit Summer Jam 2020](https://github.com/qiskit-community/qiskit-summer-jam-20) hackathon project
 
-If you want to make changes to this repo after cloning it to your machien, please make changes in a new branch (don't push anything to master). 
-Push your branch and submit a pull request. A good introduction on how all that works can be found in the link below
 
-https://www.atlassian.com/git/tutorials/using-branches
+## Physics Background
 
-The cycle should be as follows:
-1. create a new branch and check it out
-2. write/edit code
-3. commit changes to branch
-4. submit a pull request
+In the classical world we are used to matter thermally equilibrating with its environment, like a hot cup of coffee cooling down, but in the quantum world there are phases of matter known as many-body localized (MBL) phases that do not equilibrate, like a never-cooling cup of coffee. In this hackathon, we wanted to study MBL using quantum computers. 
 
-############### This space is for the actual README that we'll write up for qiskit #################
+## Implementation
+
+We implement two quantum algorithms using [Qiskit](https://qiskit.org/)
+
+* [VVQE](src/vqe/vvqe.py) - Variance Variationial Quantum Eigensolver
+* Entropy Measurement [[1]](https://iopscience.iop.org/article/10.1088/1367-2630/aae94a)
+  * [Swap Test](src/overlap/swap.py) 
+  * [BBA](src/overlap/bbq.py)
+
+This opens a new path forward to study MBL with quantum computers!
+
+### Requirements
+
+This was built using Qiskit version `0.19.6`. To read and analyze some of the data we also recommend you use [pandas](https://pandas.pydata.org/) and [Jupyter notebooks](https://jupyter.org/). 
+
+### Tests
+
+Use `pytest` to run tests
+
+# Team: Quarantine Qubits
+
+* [Abid Kahn](https://github.com/abid1214)
+* [Ryan Levy](https://github.com/ryanlevy)
+* [James Allen](https://github.com/jamesza2)
+* [Eli Chertkov](https://github.com/echertkov)
+* [Di Luo](https://github.com/rodin1000)
+
