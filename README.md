@@ -1,3 +1,6 @@
+<img src="https://github.com/abid1214/qiskit-vqe/raw/vqe_with_variational_form/coffee.png" width="250px" alt="logo" />  
+
+
 # Exploring MBL via VVQE & BBA
 
 A [Qiskit Summer Jam 2020](https://github.com/qiskit-community/qiskit-summer-jam-20) hackathon project
