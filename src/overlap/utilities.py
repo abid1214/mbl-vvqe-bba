@@ -1,5 +1,6 @@
-from qiskit import Aer, execute, QuantumCircuit, QuantumRegister, ClassicalRegister, IBMQ
+from qiskit import Aer, execute, QuantumCircuit, QuantumRegister, ClassicalRegister
 from qiskit.providers.aer.noise import NoiseModel
+from qiskit.test.mock import FakeParis
 import numpy as np
 from math import acos
 
@@ -26,8 +27,7 @@ def simulate_qc_with_noise(qc, shots=1000, bname='qasm_simulator'):
        measurement recieved. The total number of counts
        equals shots
     '''
-    provider = IBMQ.load_account()
-    backend = provider.get_backend('ibmq_vigo')
+    backend = FakeParis()
     noise_model = NoiseModel.from_backend(backend)
     coupling_map = backend.configuration().coupling_map
     basis_gates = noise_model.basis_gates
@@ -139,3 +139,23 @@ def classical_partial_overlap(psi, phi):
 
     return np.trace(rhoA@sigmaA)
 
+
+def run_vqe_overlap(qc_dict, overlap_func, shots=1000, noise=False):
+    '''Takes in a dict qc_dict, where qc_dict[W] = qc_list is a dictionary
+       of lists of QuantumCircuits qc_list for a given disorder strength W.
+       Returns a dict of lists of second renyi entropy for each circuit
+       calculated via overlap_func
+    '''
+
+    ent_dict = {}
+    for W in qc_dict.keys():
+        print("W={}".format(W))
+        qc_list = qc_dict[W]
+        o_list = [0]*len(qc_list)
+        for i in range(len(qc_list)):
+            psi = qc_list[i]
+            n = psi.num_qubits//2
+            overlap = overlap_func(psi, psi, list(range(n)), shots=shots, backend="qasm_simulator", noise=noise)
+            o_list.append(-np.log2(overlap))
+        ent_dict[W] = o_list
+    return ent_dict
