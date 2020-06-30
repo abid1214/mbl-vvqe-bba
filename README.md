@@ -14,7 +14,7 @@ We implement two quantum algorithms using [Qiskit](https://qiskit.org/)
 * [VVQE](src/vqe/vvqe.py) - Variance Variationial Quantum Eigensolver
 * Entropy Measurement [[1]](https://iopscience.iop.org/article/10.1088/1367-2630/aae94a)
   * [Swap Test](src/overlap/swap.py) 
-  * [BBA](src/overlap/bbq.py)
+  * [BBA](src/overlap/bba.py)
 
 This opens a new path forward to study MBL with quantum computers!
 
