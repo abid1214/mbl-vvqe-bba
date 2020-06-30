@@ -128,24 +128,3 @@ def classical_partial_overlap(psi, phi):
     sigmaA = np.array([[a*ac +b*bc, a*cc+b*dc], [ac*c+bc*d, c*cc+d*dc]])
 
     return np.trace(rhoA@sigmaA)
-
-
-def run_vqe_overlap(qc_dict, overlap_func, shots=1000, noise=None):
-    '''Takes in a dict qc_dict, where qc_dict[W] = qc_list is a dictionary
-       of lists of QuantumCircuits qc_list for a given disorder strength W.
-       Returns a dict of lists of second renyi entropy for each circuit
-       calculated via overlap_func
-    '''
-
-    ent_dict = {}
-    for W in qc_dict.keys():
-        print("W={}".format(W))
-        qc_list = qc_dict[W]
-        o_list = [0]*len(qc_list)
-        for i in range(len(qc_list)):
-            psi = qc_list[i]
-            n = psi.num_qubits//2
-            overlap = overlap_func(psi, psi, list(range(n)), shots=shots, backend="qasm_simulator", noise=noise)
-            o_list.append(-np.log2(overlap))
-        ent_dict[W] = o_list
-    return ent_dict
