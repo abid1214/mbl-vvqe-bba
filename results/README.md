@@ -14,8 +14,8 @@ which contain a text or pickled file of 1000 potentials of `[#]` qubits.
  - [exact_diagonalization](exact_diagonalization)
     - exact results to test against 
     - (some files are too large for github, email for more)
- - vvqe 
+ - [vvqe](vvqe) 
     - Results of optimizing variational circuits using VVQE
- - overlap
+ - [overlap](overlap)
     - Plots and results of measuring entropy of the variational circuits
 

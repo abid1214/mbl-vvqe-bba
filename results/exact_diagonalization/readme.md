@@ -1,3 +1,5 @@
+# Exact Diagonalization
+
 filenames: `ed_entropy_data_[#]_qubits.pkl`
 
 
@@ -9,7 +11,8 @@ pickled list of dictionaries:
 - renyi_entropy
 - vn_entropy
 
-==========================================
+==========================================  
+
 For the spectrum data
 filenames: `ed_spectrum_data_[#]_qubits.pkl.gz`
 
@@ -27,13 +30,14 @@ it contains a pickled list of lists of dicts (each list denotes a different W)
 
 large spectrum data not uploaded due to file size
 
-======
+======  
+
 `ed_entropyData_df.pkl.gz` is a pickled pandas DataFrame with
 
--E_order: energy eigenstate ordering
--Energy: energy of the eigenstate
--LA: L_A subsystem size cut
--S1: Von Neumann entropy (1st Renyi entropy) of the L_A cut
--S2: 2nd Renyi Entropy of the L_A cut
--W: Disorder strength
--realization: index of disorder in q[#]_1000potentials.pkl
+- E_order: energy eigenstate ordering 
+- Energy: energy of the eigenstate 
+- LA: L_A subsystem size cut 
+- S1: Von Neumann entropy (1st Renyi entropy) of the L_A cut 
+- S2: 2nd Renyi Entropy of the L_A cut 
+- W: Disorder strength 
+- realization: index of disorder in q[#]_1000potentials.pkl 
