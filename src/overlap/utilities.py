@@ -1,45 +1,35 @@
 from qiskit import Aer, execute, QuantumCircuit, QuantumRegister, ClassicalRegister
 from qiskit.providers.aer.noise import NoiseModel
-from qiskit.test.mock import FakeParis
+from qiskit.test.mock import *
 import numpy as np
 from math import acos
 
-def simulate_qc(qc, shots=1000, bname='qasm_simulator'):
-    '''simulates the quantum circuits, and
+
+def simulate_qc(qc, shots=1000, bname='qasm_simulator', noise=None):
+    '''simulates a quantum circuit, and
        returns a dictionary with the keys being
        the binary representation of the measurement
        and the values being the number of counts that
        measurement recieved. The total number of counts
        equals shots
     '''
-    simulator = Aer.get_backend(bname)
-    job = execute(qc, simulator, shots=shots)
-    result = job.result()
-    counts = result.get_counts(qc)
-    return counts
 
-
-def simulate_qc_with_noise(qc, shots=1000, bname='qasm_simulator'):
-    '''simulates the quantum circuits, and
-       returns a dictionary with the keys being
-       the binary representation of the measurement
-       and the values being the number of counts that
-       measurement recieved. The total number of counts
-       equals shots
-    '''
-    backend = FakeParis()
-    noise_model = NoiseModel.from_backend(backend)
-    coupling_map = backend.configuration().coupling_map
-    basis_gates = noise_model.basis_gates
-
-    result = execute(qc, Aer.get_backend(bname),
+    if noise == None:
+        job = execute(qc, Aer.get_backend(bname), shots=shots)
+    else:
+        backend = noise()
+        noise_model = NoiseModel.from_backend(backend)
+        coupling_map = backend.configuration().coupling_map
+        basis_gates = noise_model.basis_gates
+        job = execute(qc, Aer.get_backend(bname),
                  shots=shots,
                  coupling_map=coupling_map,
                  basis_gates=basis_gates,
-                 noise_model=noise_model).result()
-    counts = result.get_counts(0)
-    return counts
+                 noise_model=noise_model)
 
+    result = job.result()
+    counts = result.get_counts(qc)
+    return counts
 
 
 def get_p_from_counts(counts, num_qubits):
@@ -140,7 +130,7 @@ def classical_partial_overlap(psi, phi):
     return np.trace(rhoA@sigmaA)
 
 
-def run_vqe_overlap(qc_dict, overlap_func, shots=1000, noise=False):
+def run_vqe_overlap(qc_dict, overlap_func, shots=1000, noise=None):
     '''Takes in a dict qc_dict, where qc_dict[W] = qc_list is a dictionary
        of lists of QuantumCircuits qc_list for a given disorder strength W.
        Returns a dict of lists of second renyi entropy for each circuit
