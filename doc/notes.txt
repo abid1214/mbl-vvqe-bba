@@ -1,1 +1,0 @@
-This directory is where we put in documentation and the presentation.
