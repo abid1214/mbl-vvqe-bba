@@ -1,0 +1,14 @@
+qc_dict_q8_VVQE_SLSQP_sca_rep2.pkl
+
+is a dictionary of lists of QuantumCircuit objects for q=8 qubits
+e.g. qc_dict[4] = [QC_1, ..., QC_k, ..., QC_n]
+where QC_k is the kth disorder realization QuantumCircuit for W = 4
+
+
+
+sw_ent_dict_list_q4_VVQE_SLSQP_sca_rep2.pkl
+
+is a list of dictionary of lists of second renyi entropies for q=4 qubits.
+e.g.
+sw[i][4] = [S2_1,..., S2_k, ..., S2_n]
+where S2_k is the kth disorder realization entropy for W = 4 along the cut La = i+1
