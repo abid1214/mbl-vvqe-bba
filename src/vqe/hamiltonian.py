@@ -2,19 +2,18 @@ import numpy as np
 
 from qiskit.quantum_info.operators.pauli import Pauli
 from qiskit.aqua.operators.primitive_ops.pauli_op import PauliOp
-
-def identity(num_qubits):
-    # Returns an identity operator.
-    labels   = ['I']*num_qubits
-    pauli    = Pauli(label=labels)
-    pauli_op = PauliOp(pauli, 1.0)
-
-    return pauli_op
     
 def heisenberg1D(num_qubits):
-    # Returns a qiskit Operator representing
-    # the 1D Heisenberg model with open boundary conditions:
-    #      1/4 * \sum_i (X_i X_{i+1} + Y_i Y_{i+1} + Z_i Z_{i+1})
+    '''construct the 1D Heisenberg model with open
+       boundary conditions:
+         1/4 * \sum_i (X_i X_{i+1} + Y_i Y_{i+1} + Z_i Z_{i+1})
+
+       Inputs:
+         num_qubits the number of qubits (spins) in the chain
+    
+       Returns:
+         Operator (SummedOp of PauliOps) representing the Hamiltonian
+    '''
     
     ind_op = 0
     coeff  = 0.25
@@ -35,10 +34,15 @@ def heisenberg1D(num_qubits):
     return hamiltonian
 
 def magnetic_fields(potentials):
-    # Returns a qiskit Operator representing
-    # the magnetic fields
-    #      1/2 * \sum_i h_i Z_i
-    # where h_i is the vector specified by potentials.
+    '''construct magnetic fields of the form
+         1/2 * \sum_i h_i Z_i
+
+       Inputs:
+         potentials a list or ndarray representing the potential h_i
+    
+       Returns:
+         Operator (SummedOp of PauliOps) representing the magnetic fields
+    '''
     
     num_qubits = len(potentials)
     
@@ -57,9 +61,15 @@ def magnetic_fields(potentials):
     return op
 
 def sum_duplicates(operator):
-    # Sums together the coefficients
-    # of duplicated PauliOps.
-    # Note: Assumes a SummedOp of PauliOp.
+    '''sum together the coefficient of PauliOps
+       in a SummedOp of PauliOps with repeated PauliOps.
+
+       Inputs:
+         operator a SummedOp of PauliOps
+    
+       Returns:
+         Operator (SummedOp of PauliOps) a new operator with duplicated terms summed together
+    '''
 
     if len(operator) == 0:
         return operator
@@ -84,10 +94,16 @@ def sum_duplicates(operator):
     return op
 
 def remove_zeros(operator, tol=1e-15):
-    # Removes PauliOps with coefficients
-    # of zero.
-    # Notes: Assumes a SummedOp of PauliOp. 
-    # Cannot handle a zero operator.
+    '''remove PauliOps from a SummedOp of PauliOps that
+       has a zero coefficient.
+
+       Inputs:
+         operator a SummedOp of PauliOps
+         tol (optional, default=1e-15) the tolerance for what is considered zero
+    
+       Returns:
+         Operator (SummedOp of PauliOps) a new operator with zero terms removed
+    '''
     
     first_term = True
     for pauliop in operator:
@@ -104,12 +120,26 @@ def remove_zeros(operator, tol=1e-15):
     return op
 
 def square(operator):
-    # Returns a qiskit ComposedOp Operator
+    '''square a SummedOp of PauliOps, making sure to
+       sum together identical terms and remove PauliOps
+       with zero coefficients.
+
+       Inputs:
+         operator a SummedOp of PauliOps
+    
+       Returns:
+         Operator (SummedOp of PauliOps) representing operator * operator
+    '''
+    
+    # Returns a ComposedOp Operator
     # representing the operator squared.
     op2 = operator.compose(operator)
+    # Reduce the ComposedOp into a SummedOp of PauliOps.
     op2 = op2.reduce().reduce()
 
+    # Sum the duplicates.
     op2 = sum_duplicates(op2)
+    # Remove the zeros.
     op2 = remove_zeros(op2)
 
     return op2
