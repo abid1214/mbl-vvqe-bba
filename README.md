@@ -5,6 +5,9 @@
 
 A [Qiskit Summer Jam 2020](https://github.com/qiskit-community/qiskit-summer-jam-20) hackathon project
 
+ 👉 [Presentation](https://he-s3.s3.amazonaws.com/media/sprint/qiskit-community-summer-jam-mid-west/team/856107/6cd22b6projectpresentation3.pdf)  
+ 📓Notebooks: [Entanglement Entropy Plots](src/overlap/notebooks/entropy-plots.ipynb) | [BBA pure state test](src/overlap/notebooks/overlap-pure.ipynb ) | [BBA mixed state test](src/overlap/notebooks/overlap-mixed.ipynb)  
+📊 Data: [ED](results/exact_diagonalization) | [VVQE](results/vvqe) | [BBA](results/overlap)   
 
 ## Physics Background
 
